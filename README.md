@@ -51,4 +51,4 @@ terraform destroy
 
 ---
 
-Note: I did this setup keeping in mind the assignment instructions. This is not a production grade version, to make it production grade would have done certain things differently.
+**Note: I did this setup keeping in mind the assignment instructions. This is not a production grade version, to make it production grade would have done certain things differently.**
