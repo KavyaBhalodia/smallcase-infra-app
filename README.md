@@ -22,6 +22,7 @@
 ### Deployment
 - EC2 is assigned an IAM instance profile with ECR pull permissions
 - `user_data.sh` installs Docker, authenticates to ECR, pulls the image, and starts the container on first boot
+- The `docker run` command is included in `user_data.sh` purely so the full stack comes up automatically on `terraform apply`, it runs once at instance launch and should not be used as a redeployment mechanism
 - A single `terraform apply` brings up the full stack end to end
 
 ### Redeployment
@@ -30,17 +31,21 @@
 
 ## Prerequisites
 
-- Terraform >= 1.0, AWS CLI configured, Docker
+- Terraform, AWS CLI configured, Docker
 - Generate SSH key: `ssh-keygen -t rsa -b 4096 -f ~/.ssh/smallcase-key -N ""`
 
+---
+
 ## Deploy
+
+Ensure AWS credentials are configured via `aws configure` or environment variables before running.
 
 ```bash
 cd terraform
 terraform init && terraform apply
 
 # Test (wait ~2 min after apply)
-curl http://$(terraform output -raw public_ip):8081/api/v1
+curl http://$(public_ip):8081/api/v1
 
 # Tear down
 terraform destroy
