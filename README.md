@@ -34,8 +34,6 @@
 - Terraform, AWS CLI configured, Docker
 - Generate SSH key: `ssh-keygen -t rsa -b 4096 -f ~/.ssh/smallcase-key -N ""`
 
----
-
 ## Deploy
 
 Ensure AWS credentials are configured via `aws configure` or environment variables before running.
@@ -50,3 +48,7 @@ curl http://$(public_ip):8081/api/v1
 # Tear down
 terraform destroy
 ```
+
+---
+
+Note: I did this setup keeping in mind the assignment instructions. This is not a production grade version, to make it production grade would have done certain things differently.
