@@ -2,6 +2,8 @@
 
 ## Approach
 
+I did this setup keeping in mind the assignment instructions. This is not a production grade version, to make it production grade would have done certain things differently.
+
 ### Dynamic AMI
 - Used `data "aws_ami"` with `most_recent = true` and a dynamic filter block
 - Resolves the correct Amazon Linux 2 AMI per region automatically, no hardcoded AMI IDs
@@ -49,6 +51,3 @@ curl http://$(public_ip):8081/api/v1
 terraform destroy
 ```
 
----
-
-**Note: I did this setup keeping in mind the assignment instructions. This is not a production grade version, to make it production grade would have done certain things differently.**
