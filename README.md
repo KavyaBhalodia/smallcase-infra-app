@@ -1,1 +1,47 @@
 # smallcase-infra-app
+
+## Approach
+
+### Dynamic AMI
+- Used `data "aws_ami"` with `most_recent = true` and a dynamic filter block
+- Resolves the correct Amazon Linux 2 AMI per region automatically, no hardcoded AMI IDs
+
+### KMS Encrypted EBS
+- Customer-managed KMS key with auto-rotation enabled
+- Both root volume and attached data volume (1GB, `/dev/xvdf`) are encrypted using the same key
+
+### Networking
+- Dedicated VPC with public subnet, internet gateway, and route table
+- Security group allows inbound on port 22 (SSH) and 8081 (app) only
+
+### Docker Build & Push
+- `null_resource` with `local-exec` authenticates to ECR, builds the image, and pushes to AWS ECR
+- Triggers on file hash changes to `app.py`, `requirements.txt`, and `Dockerfile`
+- EC2 has `depends_on` on this resource so the image is always pushed before the instance launches
+
+### Deployment
+- EC2 is assigned an IAM instance profile with ECR pull permissions
+- `user_data.sh` installs Docker, authenticates to ECR, pulls the image, and starts the container on first boot
+- A single `terraform apply` brings up the full stack end to end
+
+### Redeployment
+- Not handled in the current setup as I assumed it is out of scope for this assignment
+- Can be extended by adding a `remote-exec` null_resource to SSH into the instance and run `docker pull` + `docker restart` on every apply, or by integrating a CI/CD pipeline (e.g. GitHub Actions) to automate the full build and deploy cycle on every push
+
+## Prerequisites
+
+- Terraform >= 1.0, AWS CLI configured, Docker
+- Generate SSH key: `ssh-keygen -t rsa -b 4096 -f ~/.ssh/smallcase-key -N ""`
+
+## Deploy
+
+```bash
+cd terraform
+terraform init && terraform apply
+
+# Test (wait ~2 min after apply)
+curl http://$(terraform output -raw public_ip):8081/api/v1
+
+# Tear down
+terraform destroy
+```
