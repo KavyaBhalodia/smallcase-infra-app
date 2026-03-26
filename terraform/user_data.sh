@@ -10,9 +10,9 @@ usermod -aG docker ec2-user
 
 # Authenticate to ECR and pull the app image
 aws ecr get-login-password --region ${aws_region} | docker login --username AWS --password-stdin ${ecr_repo_url}
-docker pull ${ecr_repo_url}:latest
+docker pull ${ecr_repo_url}:1.0
 docker run -d \
   --name smallcase-app \
   -p ${app_port}:${app_port} \
   --restart unless-stopped \
-  ${ecr_repo_url}:latest
+  ${ecr_repo_url}:1.0
